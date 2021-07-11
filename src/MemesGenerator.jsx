@@ -2,20 +2,16 @@ import React, { useState, useEffect } from "react";
 import "./styles.css";
 
 const MemesGenerator = () => {
-  const [topText, setTopText] = useState("");
-  const [bottomText, setBottomText] = useState("");
+  const [text, setText] = useState({ topText: "", bottomText: "" });
   const [randomImg, setRandomImg] = useState("");
   const [allMemeImgs, setAllMemeImgs] = useState([]);
 
   useEffect(() => {
-    console.log("inside component did mount");
-
     fetch("https://api.imgflip.com/get_memes")
       .then((response) => response.json())
       .then((response) => {
         const { memes } = response.data;
         setAllMemeImgs(memes);
-        console.log(memes.length);
       });
   }, []);
 
@@ -26,6 +22,11 @@ const MemesGenerator = () => {
     setRandomImg(randMemeImg);
   };
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setText((prevTextData) => ({ ...prevTextData, [name]: value }));
+  };
+
   return (
     <div>
       <form className="meme-form" onSubmit={handleSubmit}>
@@ -33,25 +34,24 @@ const MemesGenerator = () => {
           type="text"
           name="topText"
           placeholder="Top Text"
-          value={topText}
-          onChange={(e) => setTopText(e.target.value)}
+          value={text.topText}
+          onChange={handleChange}
         />
         <input
           type="text"
           name="bottomText"
           placeholder="Bottom Text"
-          value={bottomText}
-          onChange={(e) => setBottomText(e.target.value)}
+          value={text.bottomText}
+          onChange={handleChange}
         />
 
         <button>Gen</button>
       </form>
       <div className="meme">
         <img src={randomImg} alt="" />
-        <h2 className="top">{topText}</h2>
-        <h2 className="bottom">{bottomText}</h2>
+        <h2 className="top">{text.topText}</h2>
+        <h2 className="bottom">{text.bottomText}</h2>
       </div>
-      {/* {console.log(allMemeImgs[0])} */}
     </div>
   );
 };
